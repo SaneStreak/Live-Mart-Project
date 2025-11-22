@@ -94,4 +94,10 @@ public class FeedbackController {
         List<Feedback> list = feedbackRepository.findByProduct_Id(productId);
         return ResponseEntity.ok(list);
     }
+    @GetMapping("/retailer/{retailerId}")
+    public ResponseEntity<?> getRetailerFeedback(@PathVariable Long retailerId) {
+        // This relies on the new Repository method
+        List<Feedback> list = feedbackRepository.findByOrder_Retailer_Id(retailerId);
+        return ResponseEntity.ok(list);
+    }
 }

@@ -146,19 +146,75 @@ const RetailerDashboard = () => {
                 {/* --- TAB 2: CUSTOMER ORDERS --- */}
                 {activeTab === 'orders' && (
                     <div className="bg-white p-6 rounded-xl shadow">
-                        <h2 className="text-lg font-bold mb-4">Incoming Customer Orders</h2>
-                        {orders.length === 0 ? <p className="text-gray-500">No orders yet.</p> : (
-                            <div className="space-y-3">
+                        <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-gray-800">
+                            <Clock className="text-indigo-600" /> Incoming Customer Orders
+                        </h2>
+                        {orders.length === 0 ? (
+                            <p className="text-gray-500 py-8 text-center">No orders received yet.</p>
+                        ) : (
+                            <div className="space-y-4">
                                 {orders.map(order => (
-                                    <div key={order.orderId} className="border p-4 rounded bg-gray-50 flex justify-between items-center">
-                                        <div>
-                                            <span className="font-bold text-indigo-700">Order #{order.orderId}</span>
-                                            <span className="ml-2 text-sm text-gray-600">({order.orderStatus})</span>
-                                            <p className="text-xs text-gray-500">Total: ₹{order.totalAmount}</p>
+                                    <div key={order.orderId} className="border rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50 hover:bg-white transition shadow-sm">
+                                        <div className="mb-4 md:mb-0 w-full">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="font-bold text-lg text-indigo-800">Order #{order.orderId}</span>
+                                                <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
+                                                    order.orderStatus === 'DELIVERED' ? 'bg-green-200 text-green-800' : 
+                                                    order.orderStatus === 'PACKED' ? 'bg-blue-200 text-blue-800' :
+                                                    'bg-yellow-200 text-yellow-800'
+                                                }`}>
+                                                    {order.orderStatus}
+                                                </span>
+                                                <span className="text-xs text-gray-500 ml-auto md:ml-2">
+                                                    Total: ₹{order.totalAmount}
+                                                </span>
+                                            </div>
+                                            
+                                            <p className="text-sm text-gray-600 mb-2">
+                                                Customer: <span className="font-semibold">{order.customer?.name || "Unknown"}</span> (ID: {order.customer?.id})
+                                            </p>
+
+                                            {/* 🟢 NEW: Display Order Items List */}
+                                            <div className="bg-white p-3 rounded border border-gray-200 text-sm">
+                                                <p className="text-xs font-bold text-gray-500 mb-1 uppercase">Items Ordered:</p>
+                                                <ul className="space-y-1">
+                                                    {order.items && order.items.length > 0 ? (
+                                                        order.items.map((item) => (
+                                                            <li key={item.id} className="flex justify-between">
+                                                                <span>• <b>{item.product.name}</b></span>
+                                                                <span className="text-gray-600">x {item.quantity}</span>
+                                                            </li>
+                                                        ))
+                                                    ) : (
+                                                        <li className="text-red-500 text-xs">No items found in order data.</li>
+                                                    )}
+                                                </ul>
+                                            </div>
                                         </div>
-                                        <div className="flex gap-2">
-                                            {order.orderStatus === 'placed' && <button onClick={() => handleStatusUpdate(order.orderId, 'PACKED')} className="bg-blue-600 text-white px-3 py-1 rounded text-sm">Pack</button>}
-                                            {order.orderStatus === 'PACKED' && <button onClick={() => handleStatusUpdate(order.orderId, 'DELIVERED')} className="bg-green-600 text-white px-3 py-1 rounded text-sm">Deliver</button>}
+
+                                        {/* Action Buttons */}
+                                        <div className="flex gap-2 mt-4 md:mt-0 md:ml-6 flex-shrink-0">
+                                            {order.orderStatus === 'placed' && (
+                                                <button 
+                                                    onClick={() => handleStatusUpdate(order.orderId, 'PACKED')}
+                                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm font-bold shadow"
+                                                >
+                                                    Mark Packed
+                                                </button>
+                                            )}
+                                            {order.orderStatus === 'PACKED' && (
+                                                <button 
+                                                    onClick={() => handleStatusUpdate(order.orderId, 'DELIVERED')}
+                                                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm font-bold flex items-center gap-1 shadow"
+                                                >
+                                                    <CheckCircle className="w-4 h-4" /> Deliver
+                                                </button>
+                                            )}
+                                            {order.orderStatus === 'DELIVERED' && (
+                                                <button disabled className="bg-gray-200 text-gray-400 px-4 py-2 rounded cursor-not-allowed text-sm font-bold flex items-center gap-1 border border-gray-300">
+                                                    <CheckCircle className="w-4 h-4" /> Completed
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -166,7 +222,6 @@ const RetailerDashboard = () => {
                         )}
                     </div>
                 )}
-
                 {/* --- TAB 3: MY REQUESTS (B2B) --- */}
                 {activeTab === 'requests' && (
                     <div className="bg-white p-6 rounded-xl shadow">
@@ -194,9 +249,37 @@ const RetailerDashboard = () => {
                         )}
                     </div>
                 )}
+                {/* 🟢 TAB 4: FEEDBACK */}
+                {activeTab === 'feedback' && (
+                    <div className="bg-white p-6 rounded-xl shadow">
+                        <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-gray-800">
+                            <MessageSquare className="text-indigo-600" /> Customer Reviews
+                        </h2>
+                        {feedbacks.length === 0 ? (
+                            <p className="text-gray-500 py-8 text-center">No reviews yet.</p>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {feedbacks.map((fb) => (
+                                    <div key={fb.feedbackId} className="border border-gray-200 p-4 rounded-lg hover:shadow-md transition bg-gray-50">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-gray-800">{fb.product.name}</h3>
+                                            <span className="text-xs text-gray-500">{new Date(fb.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 mb-2">
+                                            {renderStars(fb.rating)}
+                                        </div>
+                                        <p className="text-gray-600 text-sm italic">"{fb.comment}"</p>
+                                        <p className="text-xs text-indigo-600 mt-2 font-semibold">- {fb.customer.name}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
+    
 };
 
 export default RetailerDashboard;

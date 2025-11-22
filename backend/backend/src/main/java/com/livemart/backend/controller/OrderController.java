@@ -105,15 +105,35 @@ public class OrderController {
         return ResponseEntity.ok(orderRepository.findByRetailerId(retailerId));
     }
 
-    // 🟢 --- ADD THIS NEW SECTION HERE (Before the last }) ---
-    @PutMapping("/update-status/{orderId}")
+   @PutMapping("/update-status/{orderId}")
     public ResponseEntity<?> updateOrderStatus(@PathVariable Long orderId, @RequestParam String status) {
         return orderRepository.findById(orderId).map(order -> {
+            // 1. Update Status
             order.setOrderStatus(status);
             orderRepository.save(order);
+
+            // 2. Prepare Email Data (Extract BEFORE starting thread to avoid LazyInitException)
+            String customerEmail = order.getCustomer().getEmail();
+            Long oId = order.getOrderId();
+            String newStatus = status; // effectively final for lambda
+
+            System.out.println("Attempting to send email to: " + customerEmail + " for status: " + newStatus);
+
+            // 3. Send Email in Background
+            if (customerEmail != null && !customerEmail.isEmpty()) {
+                new Thread(() -> {
+                    try {
+                        emailService.sendOrderStatusUpdate(customerEmail, oId, newStatus);
+                    } catch (Exception e) {
+                        System.err.println("Thread Error sending email: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }).start();
+            } else {
+                System.err.println("Skipping email: Customer email is null/empty");
+            }
+
             return ResponseEntity.ok("Order status updated to " + status);
         }).orElse(ResponseEntity.notFound().build());
     }
-    // -------------------------------------------------------
-
 } // <--- End of Class

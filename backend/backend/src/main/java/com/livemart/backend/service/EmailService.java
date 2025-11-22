@@ -30,4 +30,40 @@ public class EmailService {
             System.err.println("Failed to send email: " + e.getMessage());
         }
     }
+
+    public void sendOrderStatusUpdate(String toEmail, Long orderId, String newStatus) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("noreply.livemart@gmail.com");
+            message.setTo(toEmail);
+            
+            // Subject Line
+            String subject = "Order Update: Order #" + orderId + " is now " + newStatus;
+            message.setSubject(subject);
+            
+            // Body Content
+            StringBuilder body = new StringBuilder();
+            body.append("Dear Customer,\n\n");
+            
+            if ("PACKED".equalsIgnoreCase(newStatus)) {
+                body.append("Good news! Your order has been packed and is ready for dispatch.\n");
+                body.append("Our delivery partner will be assigned shortly.");
+            } else if ("DELIVERED".equalsIgnoreCase(newStatus)) {
+                body.append("Your order has been delivered successfully! 🎉\n");
+                body.append("Thank you for shopping with LiveMART.");
+            } else {
+                body.append("Your order status has been updated to: ").append(newStatus);
+            }
+            
+            body.append("\n\nBest Regards,\nTeam LiveMART");
+            message.setText(body.toString());
+
+            mailSender.send(message);
+            System.out.println("✅ Status Email sent successfully to " + toEmail);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send status email: " + e.getMessage());
+            e.printStackTrace(); // Print full error to console
+        }
+    }
 }
