@@ -37,4 +37,12 @@ export const updateOrderStatus = (orderId, status) => API.put(`/orders/update-st
 export const addFeedback = (data) => API.post('/feedback/add', data);
 export const getProductFeedback = (productId) => API.get(`/feedback/product/${productId}`);
 
+// ... existing exports ...
+
+// Wholesale APIs
+export const requestStock = (data) => API.post('/wholesale/request', data);
+export const approveStockRequest = (orderId) => API.put(`/wholesale/approve/${orderId}`);
+export const getPendingWholesaleOrders = () => API.get('/wholesale/pending');
+export const getMyStockRequests = (retailerId) => API.get(`/wholesale/retailer/${retailerId}`);
+
 export default API;

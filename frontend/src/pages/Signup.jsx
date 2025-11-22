@@ -58,7 +58,8 @@ function Signup() {
             };
 
             // Add shop details if retailer or wholesaler
-            if (formData.role !== 'customer') {
+            // FIX 1: Check Uppercase
+            if (formData.role !== 'CUSTOMER') {
                 signupData.shopName = formData.shopName;
                 signupData.shopAddress = formData.shopAddress;
             }
@@ -126,14 +127,14 @@ function Signup() {
                                         <input
                                             type="radio"
                                             name="role"
-                                            value={role.toUpperCase()} // Sends "CUSTOMER"
-                                            checked={formData.role === role.toUpperCase()} // Check against Uppercase
+                                            value={role.toUpperCase()}
+                                            checked={formData.role === role.toUpperCase()}
                                             onChange={handleChange}
                                             className="sr-only"
                                         />
                                         <span className="text-sm font-medium capitalize">
-                      {role.toLowerCase()}
-                    </span>
+                                            {role.toLowerCase()}
+                                        </span>
                                     </label>
                                 ))}
                             </div>
@@ -227,7 +228,8 @@ function Signup() {
                         </div>
 
                         {/* Shop Details (only for retailer/wholesaler) */}
-                        {formData.role !== 'customer' && (
+                        {/* FIX 2: Check Uppercase 'CUSTOMER' */}
+                        {formData.role !== 'CUSTOMER' && (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                                 <div className="md:col-span-2">
                                     <p className="text-sm font-medium text-blue-800 mb-3">
@@ -245,7 +247,8 @@ function Signup() {
                                         name="shopName"
                                         value={formData.shopName}
                                         onChange={handleChange}
-                                        required={formData.role !== 'customer'}
+                                        // FIX 3: Check Uppercase 'CUSTOMER'
+                                        required={formData.role !== 'CUSTOMER'}
                                         className="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                                         placeholder="My Store"
                                     />
@@ -260,7 +263,8 @@ function Signup() {
                                         name="shopAddress"
                                         value={formData.shopAddress}
                                         onChange={handleChange}
-                                        required={formData.role !== 'customer'}
+                                        // FIX 4: Check Uppercase 'CUSTOMER'
+                                        required={formData.role !== 'CUSTOMER'}
                                         className="block w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                                         placeholder="123 Main St"
                                     />
