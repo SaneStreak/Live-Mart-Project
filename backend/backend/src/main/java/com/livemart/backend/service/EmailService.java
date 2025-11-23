@@ -66,4 +66,18 @@ public class EmailService {
             e.printStackTrace(); // Print full error to console
         }
     }
+    public void sendOtpEmail(String toEmail, String otp) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("noreply.livemart@gmail.com");
+            message.setTo(toEmail);
+            message.setSubject("LiveMART Login OTP");
+            message.setText("Your One-Time Password (OTP) for login is: " + otp + 
+                            "\n\nDo not share this with anyone.\n\nExpires in 5 minutes.");
+            mailSender.send(message);
+            System.out.println("OTP Email sent to " + toEmail);
+        } catch (Exception e) {
+            System.err.println("Failed to send OTP email: " + e.getMessage());
+        }
+    }
 }

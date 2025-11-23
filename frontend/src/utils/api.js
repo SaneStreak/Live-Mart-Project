@@ -43,4 +43,8 @@ export const getProductFeedback = (productId) => API.get(`/feedback/product/${pr
 // 🟢 NEW: Add this line!
 export const getRetailerFeedback = (retailerId) => API.get(`/feedback/retailer/${retailerId}`);
 
+// 🟢 NEW
+export const sendOtp = (email) => API.post('/api/auth/send-otp', { email });
+export const verifyOtp = (email, otp) => API.post('/api/auth/verify-otp', { email, otp });
+
 export default API;
